@@ -4,7 +4,14 @@ py_digitrec
 Digit recognizer using my own neural network library; it also uses numpy and matplotlib.pyplot.
 There are two scripts which produce the learning curves for different network sizes and learning rates. It is
 interesting to note that they are somewhat correlated: bigger neural networks are more comfortable with
-smaller learning rates, perhaps because the error function gets more complicated as the size grows.
+smaller learning rates, perhaps because the error function gets more complicated as the size grows. There is
+also a script for analyzing the errors made by the network showing that low 'confidency' values are often
+associated with a wrong prediction.
+
+Digits are stored in digits.txt; there is a digit per line, 5000 digits in total. Each digit is a 20x20, black
+and white image where the intensity of each pixel is a floating point value. Therefore, each line is a list of
+400 floating point values storing pixel intensities starting from the first _column_ of the image.
+Images are equally distributed between digits: the first 500 are 0s, from 501 to 1000 there are 1s and so on.
 
 This repository uses [git submodule](http://git-scm.com/docs/git-submodule) to manage the dependency with the
 neural network library. To make everything work you need to use git submodule init and git submodule update
