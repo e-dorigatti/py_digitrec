@@ -3,6 +3,10 @@ from py_neuralnet.utils import sigmoid, d_dx_sigmoid
 from random import randint, shuffle
 
 def load_digits(path):
+    """
+    Loads the digits from the specified file and returns
+    a training set and a test set.
+    """
     stream = open(path)
     s_data = stream.read()
     stream.close()
@@ -16,7 +20,10 @@ def load_digits(path):
         digits.append((i, [float(x) for x in line.split(',')]))
         if len(digits) % 500 == 0:
             i += 1
-    return digits
+
+    shuffle(digits)
+    split = int(0.8 * len(digits))
+    return digits[0:split], digits[split:]
 
 def random_sample(digits):
     return digits[randint(0, len(digits) - 1)]
@@ -84,4 +91,3 @@ def learn_digits(nnet, train, cv, f_learning_rate, iterations, debug=True):
             last = []
 
     return nnet, graph_data
-

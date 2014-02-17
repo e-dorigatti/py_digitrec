@@ -2,16 +2,41 @@ py_digitrec
 -----------
 
 Digit recognizer using my own neural network library; it also uses numpy and matplotlib.pyplot.
-There are two scripts which produce the learning curves for different network sizes and learning rates. It is
+
+I have put a lot of effort in producing plots to explore and explain the behavior of the network.
+You can create them with the following command:
+
+```
+python learning_curves_comparison.py & python learning_curves_single.py 10 & python learning_curves_single.py 100 & python learning_curves_single.py 1000 & python errors.py & python hidden_images.py 
+```
+Just make sure your pc won't overheat ;) The script learning_curves_comparison.py needs quite
+a lot of time (30-45 minutes), the others should run in 10-15 minutes.
+
+learning_curves_*.py produce the learning curves for different network sizes and learning rates. It is
 interesting to note that they are somewhat correlated: bigger neural networks are more comfortable with
-smaller learning rates, perhaps because the error function gets more complicated as the size grows. There is
-also a script for analyzing the errors made by the network showing that low 'confidency' values are often
-associated with a wrong prediction.
+smaller learning rates, perhaps because the error function gets more complicated as the size grows.
+Extremely large networks have a flat plot in many cases probably due to a numerical bug in my
+library.
+
+The script errors.py analyzes the errors made by the network; we see that the the network is very
+confident in its prediction in most of the cases. Also, low 'confidency' values are often associated with
+a wrong prediction, therefore, I believe it is possible to accurately detect when the network is wrong
+given its outputs.
+
+The script called 'hidden_images.py' trains a 400 x 20 x 10 neural network and plots the connection weights
+between the input layer and each neuron of the hidden layer. It is amazing to observe such a plot! You can
+clearly see many strokes which resemble common parts of digits and, if you are lucky enough, you can even spot
+an entire digit. Sometimes there are neurons with seemingly random weights as well; those are useless units
+and would be removed if the network were to be pruned (i.e. optimized)
 
 Digits are stored in digits.txt; there is a digit per line, 5000 digits in total. Each digit is a 20x20, black
 and white image where the intensity of each pixel is a floating point value. Therefore, each line is a list of
-400 floating point values storing pixel intensities starting from the first _column_ of the image.
+400 floating point values storing pixel intensities starting from the first _column_ of the image; in other
+words, you need to transpose the 20x20 matrix to obtain the correct image.
 Images are equally distributed between digits: the first 500 are 0s, from 501 to 1000 there are 1s and so on.
+These digits are a subset of the [MNIST handwritten digits dataset](http://yann.lecun.com/exdb/mnist/).
+[As you can see](http://arxiv.org/abs/1003.0358), a properly trained feedforward neural network is able to achieve the
+incredible precision of 99.65% on the complete dataset.
 
 This repository uses [git submodule](http://git-scm.com/docs/git-submodule) to manage the dependency with the
 neural network library. To make everything work you need to use git submodule init and git submodule update

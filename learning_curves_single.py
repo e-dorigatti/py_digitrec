@@ -55,10 +55,7 @@ if __name__ == '__main__':
         print 'Please specify network sizes as parameters'
     else:
         print 'loading digits...'
-        d = load_digits('digits.txt')
-        shuffle(d)
-        train_set = d[0:4000]
-        cv_set = d[4000:]
+        train_set, cv_set = load_digits('digits.txt')
 
         for ns in [int(x) for x in argv[1:]]:
             print ns, 'neurons'

@@ -34,10 +34,7 @@ def plot_subplot(index, plot_data):
 if __name__ == '__main__':
     plt.figure(figsize=(1280/96.0, 720/96.0), dpi=96)
     
-    d = load_digits('digits.txt')
-    shuffle(d)
-    train_set = d[0:4000]
-    cv_set = d[4000:]
+    train_set, cv_set = load_digits('digits.txt')
 
     sizes = [
         ('red', 10),
