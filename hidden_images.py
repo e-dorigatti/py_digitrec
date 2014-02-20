@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 def train_network(train_set, test_set):
     nnet = NeuralNetwork([400, 20, 10], sigmoid, d_dx_sigmoid)
     nnet, data = common.learn_digits(nnet, train_set, test_set,
-        lambda t: 10000.0 / (20000.0 + t), 10000, False)
+        lambda t: 10000.0 / (20000.0 + t), 10000)
 
     acc = common.test_cv(nnet, test_set)
     return nnet, acc

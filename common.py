@@ -1,11 +1,13 @@
 from py_neuralnet.neuralnet import NeuralNetwork
-from py_neuralnet.utils import sigmoid, d_dx_sigmoid
-from random import randint, shuffle
+from random import randint, shuffle, choice
 
 def load_digits(path):
     """
     Loads the digits from the specified file and returns
-    a training set and a test set.
+    a training set and a test set; the training set has 80%
+    of the data.
+
+    Each element is a tuple (digit, input_vector)
     """
     stream = open(path)
     s_data = stream.read()
@@ -25,35 +27,60 @@ def load_digits(path):
     split = int(0.8 * len(digits))
     return digits[0:split], digits[split:]
 
-def random_sample(digits):
-    return digits[randint(0, len(digits) - 1)]
-
 def map_output(i):
-    # maps the output from the correct digit to the vector of
-    # outputs for the neural network
+    """
+    Maps a digit to a vector used to evaluate the network's output;
+    digit '0' corresponds to the first neuron, digit '1' to the
+    second etc.
+    """
     out = [0] * 10
     out[i] = 1
     return out
 
 def prediction(nnet, digit):
-    out = nnet.value(digit)
-    best = (0, 0)
-    for i, y in enumerate(out):
-        if y > best[1]:
-            best = i, y
-    return best
+    """
+    Returns the neural network's prediction for the given digit and
+    its 'confidency' as second element of the tuple.
+    """
+    return max(enumerate(nnet.value(digit)), key = lambda x: x[1])
 
 def test_cv(nnet, cv):
-    # test the neural network agains the cross validation set
-    # returns the accuracy
-    correct = 0
-    for x in cv:
-        d = prediction(nnet, x[1])
-        if d[0] == x[0]:
-            correct += 1
-    return float(correct) / len(cv)
+    """
+    Tests the neural network against the cross validation set returning
+    the accuracy obtained as number_correct / number_samples
+    """
+    outcome = [prediction(nnet, input)[0] == correct for correct, input in cv]
+    return float(sum(outcome)) / len(cv)
 
-def learn_digits(nnet, train, cv, f_learning_rate, iterations, debug=True):
+def learn_digits(nnet, train_set, cv_set, learning_rate, iterations, step=-1):
+    """
+    Attempts to teach the given digits (train_set) to the neural network
+    running for the specified iterations. Returns the neural network and,
+    if the 'debug mode' is activated (see below), some statistics about
+    the training as a dictionary whose keys are strings and values
+    are lists (to ease plotting the data).
+    
+    The digits must have the same format as those returned from load_digits:
+    (digit, input_vector).
+
+    cv_set is the cross validation set and is used in 'debug mode' to
+    periodically test the network's performances. It can be None if
+    you do not wish to do this.
+
+    step is the step size in 'debug mode'. Every -steps- iterations the
+    network is tested and various data is collected.
+
+    The 'debug mode' is activated if cv_set is not none and steps is
+    greater than 0. In this case the network is periodically tested
+    and the following statistics are collected in a dictionary:
+    iteration number, training error, validation accuracy and learning
+    rate.
+
+    learning_rate can be either a number or a function. In the latter case
+    it will be called at every iteration to compute the learning rate
+    to use for that particular iteration; therefore, it must accept
+    one int parameter, the iteration, and return a number.
+    """
     graph_data = {
         'iterations': [],
         'training_error': [],
@@ -61,33 +88,32 @@ def learn_digits(nnet, train, cv, f_learning_rate, iterations, debug=True):
         'learning_rate': [],
     }
 
-    last = []
-    i = 0
-    acc = 0
-    while i < iterations: #acc < 0.92:
-        i += 1
-        learning_rate = f_learning_rate(i)
-        x = random_sample(train)
-        out = map_output(x[0])
-        err = nnet.backprop(x[1], out, learning_rate)
-        
-        if not debug:
-            continue
+    debug = step > 0 and cv_set is not None
+    error_accumulator, i= 0.0, 0
+    train_set = [(map_output(digit), input) for digit, input in train_set]
+    f_lr = learning_rate
+    if isinstance(learning_rate, (int, long, float)):
+        f_lr = lambda x: learning_rate
 
-        last.append(err)
-        if len(last) >= 100:
-            avg_err = float(sum(last)) / len(last)
-            acc = test_cv(nnet, cv)
+    while i < iterations:
+        i += 1
+        learning_rate = f_lr(i)
+        correct, input = choice(train_set)
+        error_accumulator += nnet.backprop(input, correct, learning_rate)
+        
+        if debug and i % step == 0:
+            avg_error = error_accumulator / step
+            error_accumulator = 0
+
+            accuracy = test_cv(nnet, cv_set)
 
             graph_data['iterations'].append(i)
-            graph_data['training_error'].append(avg_err)
-            graph_data['validation_accuracy'].append(acc)
+            graph_data['training_error'].append(avg_error)
+            graph_data['validation_accuracy'].append(accuracy)
             graph_data['learning_rate'].append(learning_rate)
-            
+    
             print 'iteration', i, \
                   'learning rate', learning_rate, \
-                  'error', float(sum(last)) / len(last), \
-                  'accuracy', acc
-            last = []
-
+                  'error', avg_error, \
+                  'accuracy', accuracy
     return nnet, graph_data

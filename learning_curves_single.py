@@ -24,7 +24,7 @@ def compare_learning_rates(n, train_set, cv_set):
 
     for subplot, color, lr in learning_rates:
         nnet = NeuralNetwork([400, n, 10], sigmoid, d_dx_sigmoid)
-        nnet, d = learn_digits(nnet, train_set, cv_set, lr, iterations)
+        nnet, d = learn_digits(nnet, train_set, cv_set, lr, iterations, 100)
 
         errors.append((color, d['iterations'], d['training_error']))
         plt.subplot(2, 3, subplot)
@@ -43,7 +43,7 @@ def compare_learning_rates(n, train_set, cv_set):
         plt.plot(its, err, color=color)
         plt.xticks(range(0,iterations+1,5000))
         plt.xlim(xmin=0, xmax=iterations)
-        plt.ylim(ymin=0, ymax=10)
+        plt.ylim(ymin=0)
         plt.grid(True)
 
     plt.suptitle('Comparing Learning Rates For a 400 x %d x 10 Neurons Network' % n)

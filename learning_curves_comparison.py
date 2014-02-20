@@ -13,7 +13,7 @@ def compare_size(sizes, f_learning_rate, train_set, cv_set):
     for color, n in sizes:
         nnet = NeuralNetwork([400, n, 10], sigmoid, d_dx_sigmoid)
         nnet, data = learn_digits(nnet, train_set, cv_set, f_learning_rate, \
-            iterations)
+            iterations, 100)
         plot_data[n] = data
         plot_data[n]['color'] = color
     return plot_data

@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # best values found empirically (python learning_curves.py)
     nnet, gd = learn_digits(nnet, train_set, cv_set, \
-        lambda t: 10000.0 / (20000.0 + t), 10000, debug=False)
+        lambda t: 10000.0 / (20000.0 + t), 10000)
 
     # validate the network and build the data
     print 'validating results'
