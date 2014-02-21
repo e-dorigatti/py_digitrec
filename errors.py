@@ -44,29 +44,24 @@ if __name__ == '__main__':
     n_wrong, bins = np.histogram(wrong, 10)
 
     count = np.array([c + w for c, w in zip(n_corr, n_wrong)], dtype=np.float)
-    bars_corr = 100 * n_corr / count
-    bars_wrong = 100 * n_wrong / count
 
-    ticks = np.arange(0.1, 1.01, 0.1)
+    ticks = np.arange(0.0, 1.0, 0.1)
     width = 0.05
 
     plt.subplot(1, 2, 1)
-    plt.bar(ticks-width/2, bars_corr, width=width, color='g', label='Correct')
-    plt.bar(ticks-width/2, bars_wrong, width=width, bottom=bars_corr, \
-        color='r',label='Wrong')
-    plt.legend(loc='lower right')
-    plt.xlim(xmax=1+width)
+    plt.bar(ticks, n_corr / count, width=width, color='b', label='Prediction Correctness')
+    plt.legend(loc='upper left')
     plt.xlabel('Network Confidency')
-    plt.title('Prediction Correctness (%)')
+    plt.grid(True)
 
     plt.subplot(1, 2, 2)
-    rel_cnt = count / np.sum(count)
-    plt.bar(ticks-width/2, 100*rel_cnt, width=width, color='b')
-    plt.title('Sample Distribution (%)')
-    plt.xlabel('Network Confidency')
-    plt.xlim(xmax=1+width)
-
-    plt.suptitle('Error Analysis - Network Accuracy: {:.1%}'.format(acc))
+    plt.bar(ticks, n_corr, width=width, color='g', label='Correct')
+    plt.bar(ticks, n_wrong, width=width, color='r', label='Wrong', bottom=n_corr)
+    plt.legend(loc='upper left')
     plt.grid(True)
+    plt.xlabel('Network Confidency')
+
+    plt.suptitle('Error Analysis over {} Examples\nNetwork Accuracy: {:.1%}'\
+        .format(len(data), acc))
     plt.savefig('errors.png')
     plt.show()
