@@ -24,10 +24,19 @@ a wrong prediction, therefore, I believe it is possible to accurately detect whe
 given its outputs.
 
 The script called 'hidden_images.py' trains a 400 x 20 x 10 neural network and plots the connection weights
-between the input layer and each neuron of the hidden layer. It is amazing to observe such a plot! You can
-clearly see many strokes which resemble common parts of digits and, if you are lucky enough, you can even spot
-an entire digit. Sometimes there are neurons with seemingly random weights as well; those are useless units
-and would be removed if the network were to be pruned (i.e. optimized)
+between the input layer and each neuron of the hidden layer. This picture shows how the neurons "see" the
+input image and which parts they think are more important; their "opinion" is then combined by the
+output layer's neurons to predict a digit. During training, the output neurons are trained to "trust"
+some of the hidden neurons' "opinions" to form a prediction. This is a very simplified version of how
+our own brain processes images coming from our eyes: there are different layers of neurons and each neuron
+is specialized in detecting particular features such as color, contrast, orientation and so on. The image
+is gradually transformed and more complex features are extracted as the image "flows" through layers
+until, somehow, we "understand" what we are seeing (whatever understanding means for our brain).
+
+It is amazing to observe such a plot! You can clearly see many strokes which resemble common parts of digits
+and, if you are lucky enough, you can even spot an entire digit. Sometimes there are neurons with seemingly
+random weights as well; those are useless units and would be removed if the network were to be pruned
+(i.e. optimized).
 
 Digits are stored in digits.txt; there is a digit per line, 5000 digits in total. Each digit is a 20x20, black
 and white image where the intensity of each pixel is a floating point value. Therefore, each line is a list of

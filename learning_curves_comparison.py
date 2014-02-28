@@ -27,7 +27,7 @@ def plot_subplot(index, plot_data):
         plt.plot(value['iterations'], value['learning_rate'], \
             color = 'black', linestyle = 'dashed')
 
-    plt.xticks([i for i in range(0, iterations, 5000)])
+    plt.xticks([i for i in range(0, iterations+1, 5000)])
     plt.ylim(ymin=0, ymax=1)
     plt.grid(True)
 
