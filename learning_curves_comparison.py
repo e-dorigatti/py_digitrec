@@ -11,11 +11,11 @@ iterations = 15000
 def compare_size(sizes, f_learning_rate, train_set, cv_set):
     plot_data = {}
     for color, n in sizes:
-        nnet = NeuralNetwork([400, n, 10], sigmoid, d_dx_sigmoid)
+        nnet = NeuralNetwork([400] + n + [10], sigmoid, d_dx_sigmoid)
         nnet, data = learn_digits(nnet, train_set, cv_set, f_learning_rate, \
             iterations, 100)
-        plot_data[n] = data
-        plot_data[n]['color'] = color
+        plot_data[str(n)] = data
+        plot_data[str(n)]['color'] = color
     return plot_data
 
 def plot_subplot(index, plot_data):
@@ -37,9 +37,9 @@ if __name__ == '__main__':
     train_set, cv_set = load_digits('digits.txt')
 
     sizes = [
-        ('red', 10),
-        ('green', 100),
-        ('blue', 1000) ]
+        ('red', [20]),
+        ('green', [100, 10]),
+        ('blue', [200]) ]
     learning_rates = [ 
         (1, lambda t: 0.05),
         (2, lambda t: 10000.0 / (50000.0 + t)),

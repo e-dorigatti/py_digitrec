@@ -7,7 +7,7 @@ I have put a lot of effort in producing plots to explore and explain the behavio
 You can create them with the following command:
 
 ```
-python learning_curves_comparison.py & python learning_curves_single.py 10 & python learning_curves_single.py 100 & python learning_curves_single.py 1000 & python errors.py & python hidden_images.py 
+python learning_curves_comparison.py & python learning_curves_single.py 20 & python learning_curves_single.py 200 & python learning_curves_single.py 100x20 & python errors.py & python hidden_images.py 
 ```
 Just make sure your pc won't overheat ;) The script learning_curves_comparison.py needs quite
 a lot of time (30-45 minutes), the others should run in 10-15 minutes.
@@ -16,7 +16,8 @@ learning_curves_*.py produce the learning curves for different network sizes and
 interesting to note that they are somewhat correlated: bigger neural networks are more comfortable with
 smaller learning rates, perhaps because the error function gets more complicated as the size grows.
 Extremely large networks have a flat plot in many cases probably due to a numerical bug in my
-library.
+library. Networks with more than one hidden layer are slower to train but achieve slightly better
+classification performance.
 
 The script errors.py analyzes the errors made by the network; we see that the the network is very
 confident in its prediction in most of the cases. Also, low 'confidency' values are often associated with
