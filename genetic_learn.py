@@ -9,7 +9,7 @@ def build_fitness(cv):
 
 if __name__ == '__main__':
     training_set, cv_set = common.load_digits('digits.txt')
-    gen = GeneticAlgorithm(50, [400, 20, 10], build_fitness(cv_set))
+    gen = GeneticAlgorithm(100, [400, 20, 10], build_fitness(cv_set))
 
     while True:
-        print gen.evolve()
+        gen.evolve()
