@@ -1,33 +1,34 @@
 from math import sqrt
 import numpy as np
-import common
+from common import test_cv, load_digits, map_output
 from py_neuralnet.neuralnet import NeuralNetwork
-from py_neuralnet.utils import sigmoid, d_dx_sigmoid
+from py_neuralnet.online import online_learn
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-def train_network(train_set, test_set):
-    nnet = NeuralNetwork([400, 20, 10], sigmoid, d_dx_sigmoid)
-    nnet, data = common.learn_digits(nnet, train_set, test_set,
-        lambda t: 10000.0 / (20000.0 + t), 10000)
+def train_network():
+    nnet = NeuralNetwork([400, 20, 10])
+    train_set, test_set = load_digits('digits.txt')
+    train_set = [(inputs, map_output(digit)) for digit, inputs in train_set]
 
-    acc = common.test_cv(nnet, test_set)
-    return nnet, acc
+    online_learn(nnet, train_set, 500, lambda t: 500.0 / (500.0 + t), 2500)
+    accuracy, validation_error = test_cv(nnet, test_set)
 
-if __name__ == '__main__':
+    return nnet, accuracy
+
+def main():
     print 'learning digits'
-    train_set, test_set = common.load_digits('digits.txt')
-    nnet, accuracy = train_network(train_set, test_set)
+    nnet, accuracy = train_network()
 
     print 'plotting weights'
-    hidden_weights = nnet.layers[1].weights
+    hidden_weights = nnet.weights[0]
     
     for i, neuron in enumerate(hidden_weights):
         neuron = neuron[1:] # forget the bias
         size = int(sqrt(len(neuron)))
         neuron = neuron.reshape((size, size)).T
 
-        plt.subplot(5, 4, i)
+        plt.subplot(5, 4, i + 1)
         # use interpolation='nearest' to clearly see the individual pixels
         plt.imshow(neuron, cmap=cm.Greys_r)
         plt.xticks([])
@@ -35,5 +36,7 @@ if __name__ == '__main__':
 
     plt.suptitle('Connection Weigths to Each Neuron of the Hidden Layer'+\
         '\nNetwork Accuracy: {:.1%}'.format(accuracy))
-    plt.savefig('hidden_weights.png')
     plt.show()
+
+if __name__ == '__main__':
+    main()

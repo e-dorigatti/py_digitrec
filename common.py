@@ -1,4 +1,5 @@
 from py_neuralnet.neuralnet import NeuralNetwork
+from py_neuralnet.online import online_learn
 from random import randint, shuffle, choice
 
 def load_digits(path):
@@ -47,73 +48,38 @@ def prediction(nnet, digit):
 def test_cv(nnet, cv):
     """
     Tests the neural network against the cross validation set returning
-    the accuracy obtained as number_correct / number_samples
+    the accuracy obtained as number_correct / number_samples and the
+    average error
     """
-    outcome = [prediction(nnet, input)[0] == correct for correct, input in cv]
-    return float(sum(outcome)) / len(cv)
+    outcome = (prediction(nnet, input)[0] == correct for correct, input in cv)
+    errors = (nnet.prediction_error(map_output(correct), nnet.value(input))
+        for correct, input in cv)
+    return float(sum(outcome)) / len(cv), sum(errors) / len(cv)
 
 def learn_digits(nnet, train_set, cv_set, learning_rate, iterations, step=-1):
-    """
-    Attempts to teach the given digits (train_set) to the neural network
-    running for the specified iterations. Returns the neural network and,
-    if the 'debug mode' is activated (see below), some statistics about
-    the training as a dictionary whose keys are strings and values
-    are lists (to ease plotting the data).
-    
-    The digits must have the same format as those returned from load_digits:
-    (digit, input_vector).
+    train_set = [(inputs, map_output(digit)) for digit, inputs in train_set]
 
-    cv_set is the cross validation set and is used in 'debug mode' to
-    periodically test the network's performances. It can be None if
-    you do not wish to do this.
-
-    step is the step size in 'debug mode'. Every -steps- iterations the
-    network is tested and various data is collected.
-
-    The 'debug mode' is activated if cv_set is not none and steps is
-    greater than 0. In this case the network is periodically tested
-    and the following statistics are collected in a dictionary:
-    iteration number, training error, validation accuracy and learning
-    rate.
-
-    learning_rate can be either a number or a function. In the latter case
-    it will be called at every iteration to compute the learning rate
-    to use for that particular iteration; therefore, it must accept
-    one int parameter, the iteration, and return a number.
-    """
-    graph_data = {
+    plot_data = {
         'iterations': [],
         'training_error': [],
+        'validation_error': [],
         'validation_accuracy': [],
         'learning_rate': [],
     }
 
-    debug = step > 0 and cv_set is not None
-    error_accumulator, i= 0.0, 0
-    train_set = [(map_output(digit), input) for digit, input in train_set]
-    f_lr = learning_rate
-    if isinstance(learning_rate, (int, long, float)):
-        f_lr = lambda x: learning_rate
+    def stop(i, trainerror, lrate):
+        accuracy, valerror = test_cv(nnet, cv_set)
+        plot_data['iterations'].append(i)
+        plot_data['training_error'].append(trainerror)
+        plot_data['validation_error'].append(valerror)
+        plot_data['validation_accuracy'].append(accuracy)
+        plot_data['learning_rate'].append(lrate)
 
-    while i < iterations:
-        i += 1
-        learning_rate = f_lr(i)
-        correct, input = choice(train_set)
-        error_accumulator += nnet.backprop(input, correct, learning_rate)
-        
-        if debug and i % step == 0:
-            avg_error = error_accumulator / step
-            error_accumulator = 0
+        print 'epoch %d lrate %f training err %f validation err %f accuracy %f' % (
+            i, lrate, trainerror, valerror, accuracy)
 
-            accuracy = test_cv(nnet, cv_set)
+        return i >= iterations
 
-            graph_data['iterations'].append(i)
-            graph_data['training_error'].append(avg_error)
-            graph_data['validation_accuracy'].append(accuracy)
-            graph_data['learning_rate'].append(learning_rate)
-    
-            print 'iteration', i, \
-                  'learning rate', learning_rate, \
-                  'error', avg_error, \
-                  'accuracy', accuracy
-    return nnet, graph_data
+    online_learn(nnet, train_set, step, learning_rate, stop)
+
+    return nnet, plot_data

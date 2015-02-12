@@ -1,6 +1,5 @@
 from py_neuralnet.neuralnet import NeuralNetwork
-from py_neuralnet.utils import sigmoid, d_dx_sigmoid
-from common import load_digits, learn_digits
+from common import load_digits, learn_digits, map_output
 
 from random import shuffle
 import matplotlib.pyplot as plt
@@ -12,11 +11,9 @@ if __name__ == '__main__':
 
     # train a neural network to recognize digits
     print 'training network'
-    nnet = NeuralNetwork([400, 20, 10], sigmoid, d_dx_sigmoid)
-
-    # best values found empirically (python learning_curves.py)
+    nnet = NeuralNetwork([400, 20, 10])
     nnet, gd = learn_digits(nnet, train_set, cv_set, \
-        lambda t: 10000.0 / (20000.0 + t), 10000)
+        lambda t: 500.0 / (500.0 + t), 10000, 500)
 
     # validate the network and build the data
     print 'validating results'
@@ -63,5 +60,4 @@ if __name__ == '__main__':
 
     plt.suptitle('Error Analysis over {} Examples\nNetwork Accuracy: {:.1%}'\
         .format(len(data), acc))
-    plt.savefig('errors.png')
     plt.show()
