@@ -39,6 +39,7 @@ def train_network(args):
 
     return plot_data, subplot, name
 
+
 def plot_subplot(index, plot_data, iterations):
     plt.subplot(2, 3, index)
 
@@ -51,6 +52,7 @@ def plot_subplot(index, plot_data, iterations):
     plt.xticks([i for i in range(0, iterations+1, 5000)])
     plt.ylim(ymin=0, ymax=1)
     plt.grid(True)
+
 
 def main(sizes):
     plt.figure(figsize=(1280/96.0, 720/96.0), dpi=96)
@@ -98,6 +100,7 @@ def main(sizes):
     plt.show()
 
     print 'Finished'
+
 
 if __name__ == '__main__':
     if len(argv) == 1:

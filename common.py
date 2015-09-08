@@ -1,8 +1,10 @@
 from py_neuralnet.neuralnet import NeuralNetwork
 from py_neuralnet.online import online_learn
 from random import randint, shuffle, choice
+import numpy as np
 
-def load_digits(path):
+
+def load_digits(path, normalize=False):
     """
     Loads the digits from the specified file and returns
     a training set and a test set; the training set has 80%
@@ -20,13 +22,22 @@ def load_digits(path):
         if len(line) == 0:
             continue
 
-        digits.append((i, [float(x) for x in line.split(',')]))
+        pixels = [float(x) for x in line.split(',')]
+        digits.append((i, preprocess_image(pixels) if normalize else pixels))
         if len(digits) % 500 == 0:
             i += 1
 
     shuffle(digits)
     split = int(0.8 * len(digits))
     return digits[0:split], digits[split:]
+
+
+def preprocess_image(pixels):
+    """
+    normalizes the pixel intensities so that the data has 0 mean and 1 standard deviation
+    """
+    return list((pixels - np.mean(pixels)) / np.std(pixels))
+
 
 def map_output(i):
     """
@@ -38,12 +49,14 @@ def map_output(i):
     out[i] = 1
     return out
 
+
 def prediction(nnet, digit):
     """
     Returns the neural network's prediction for the given digit and
     its 'confidency' as second element of the tuple.
     """
     return max(enumerate(nnet.value(digit)), key = lambda x: x[1])
+
 
 def test_cv(nnet, cv):
     """
@@ -55,6 +68,7 @@ def test_cv(nnet, cv):
     errors = (nnet.prediction_error(map_output(correct), nnet.value(input))
         for correct, input in cv)
     return float(sum(outcome)) / len(cv), sum(errors) / len(cv)
+
 
 def learn_digits(nnet, train_set, cv_set, learning_rate, iterations, step=-1):
     train_set = [(inputs, map_output(digit)) for digit, inputs in train_set]
