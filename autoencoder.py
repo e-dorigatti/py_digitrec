@@ -62,4 +62,7 @@ def main(size):
 
 
 if __name__ == '__main__':
-    main(int(argv[1]))
+    if len(argv) < 2:
+        print 'specify hidden layer size as parameter'
+    else:
+        main(int(argv[1]))

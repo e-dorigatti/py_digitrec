@@ -37,6 +37,19 @@ as training proceeds. In theory, the validation error should decrease up to a ce
 starts increasing; this is called overfitting. Overfitting is bad because the model is not learning how to
 generalize the dataset but
 
+ - *network_train.py* trains a full neural network and saves it to a file using the pickle module. It allows
+to specify different stopping criteria, such as training/validation error, accuracy or number of epochs
+(you can even mix them in an OR fashion). It allows to customize different learning parameters such
+as the learning rate, the batch size, the regularization coefficient and the network architecture.
+
+ - *autoencoder.py* trains an autoencoder, i.e. a neural network capable of reconstructing its input via an
+intermediate, compressed representation of it (the hidden layer). The training stops after the reconstruction
+error is less than 1.5 or the network has been trained on 4500 images and after this the intermediate 
+representation is show just like the hidden images script does and a digit is reconstructed.
+
+ - *reconstruction.py* trains a network then tries to reconstruct digits by modifying a random noise image.
+Results are pretty disappointing :)
+
 Digits are stored in digits.txt; there is a digit per line, 5000 digits in total. Each digit is a 20x20, black
 and white image where the intensity of each pixel is a floating point value. Therefore, each line is a list of
 400 floating point values storing pixel intensities starting from the first _column_ of the image; in other
